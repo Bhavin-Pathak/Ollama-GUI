@@ -6,9 +6,7 @@ This Repository Contains Backend-Fronted Where Backend Build On Node JS & Fronte
 
 ## Tech Stack
 
-**Client:** React, Redux, TailwindCSS
-
-**Server:** Node, Express
+**Client:** React, TailwindCSS
 
 
 ## Authors

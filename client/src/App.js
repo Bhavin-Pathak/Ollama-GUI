@@ -11,6 +11,15 @@ function App() {
       .then((data) => setMessage(data.message));
   }, []);
   console.log(message);
+
+  const [newmessage, setNewMessage] = useState("Loading...");
+  useEffect(() => {
+    fetch("/api/greet")
+      .then((res) => res.json())
+      .then((data) => setNewMessage(data.message));
+  }, []);
+  console.log(newmessage);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -26,8 +35,8 @@ function App() {
         >
           Learn React
         </a>
-        <h1>Message from server:</h1>
-        <p>{message}</p>
+        <h1>Message from server: {message}</h1>
+        <h1>New Message from server: {newmessage}</h1>
       </header>
     </div>
   );

@@ -13,6 +13,6 @@ const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 app.get("/api/greet", (req, res) => {
-  const name = req.query.name || "World";
+  const name = req.query.name || "Bhavin";
   res.json({ message: `Hello, ${name}!` });
 });

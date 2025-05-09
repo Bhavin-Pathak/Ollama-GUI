@@ -4,17 +4,31 @@ export class ChatModel {
   constructor() {
     this.conversations = [];
     this.activeConversationId = null;
-    this.availableModels = []; // Will be populated from Ollama
+    this.availableModels = [];
+    this.selectedModel = null;
+    this.isInitialized = false;
   }
 
   async initialize() {
-    // Fetch available models from Ollama
+    // Prevent multiple initializations
+    if (this.isInitialized) {
+      return this.availableModels;
+    }
+
     try {
       const models = await this.fetchAvailableModels();
       this.availableModels = models;
+
+      // Set default model if none selected
+      if (!this.selectedModel && models.length > 0) {
+        this.selectedModel = models[0].name;
+      }
+
+      this.isInitialized = true;
       return models;
     } catch (error) {
       console.error("Failed to initialize ChatModel:", error);
+      this.isInitialized = false;
       throw error;
     }
   }
@@ -80,7 +94,7 @@ export class ChatModel {
       return data.response;
     } catch (error) {
       console.error("Error communicating with Ollama:", error);
-      return `Sorry, I couldn't connect to the Ollama service. Please make sure Ollama is running on your laptop with the ${modelName} model pulled.`;
+      return `Sorry, I couldn't connect to the Ollama service. Please make sure Ollama is running on your pc with the ${modelName} model pulled.`;
     }
   }
 
@@ -98,5 +112,40 @@ export class ChatModel {
       return true;
     }
     return false;
+  }
+  setSelectedModel(modelName) {
+    if (!modelName) {
+      throw new Error("Model name is required");
+    }
+
+    // Handle cases where model isn't pulled yet
+    if (this.availableModels.length === 0) {
+      console.warn(
+        "No models available, accepting requested model:",
+        modelName
+      );
+      this.selectedModel = modelName;
+      return true;
+    }
+
+    // Verify model exists in available models
+    const modelExists = this.availableModels.some(
+      (model) => model.name === modelName
+    );
+
+    if (!modelExists) {
+      console.warn(`Model ${modelName} not found in available models`);
+      // Keep current model if one is set
+      if (!this.selectedModel && this.availableModels.length > 0) {
+        this.selectedModel = this.availableModels[0].name;
+      }
+      return false;
+    }
+
+    this.selectedModel = modelName;
+    return true;
+  }
+  getSelectedModel() {
+    return this.selectedModel || this.availableModels[0]?.name || null;
   }
 }
